@@ -1,0 +1,161 @@
+# The 2026 training-interest survey, linked from the autumn 2026 outreach email to departments and schools.
+# `index.qmd` names this file in `metadata-files`; `survey.lua` turns it into the form. Next year: copy this
+# file to 2027.yml, change `id` and whatever else has changed, and point index.qmd at the copy. The receiver
+# files each year's responses on its own tab of the Sheet, named by `id`.
+#
+# A question: id (the column name in the Sheet; keep it stable across years so answers line up), type
+# (radio · checkbox · select · text · textarea · email), label, and optionally hint, required, columns (lay the
+# options out in two columns), max (checkbox only: the most that can be ticked), other (add an "Other" option
+# with a text box), part (belongs to the question before it: shown in the same box, unnumbered), placeholder,
+# and options, or groups of options each with a label. An option is a string, or a map of label and detail
+# (a line of smaller text under it); what is stored is the label.
+#
+# Design notes, question by question, are in dss-training-ops,
+# docs/plans/2026-09-26-training-interest-survey.md.
+
+title: "What training would help your research?"
+description: "A two-minute survey from IQSS Data Science Services on the training formats and topics you would use."
+
+survey:
+  id: "2026"
+  endpoint: "https://script.google.com/macros/s/AKfycbxiOhMQ71eu6hIfHcC5cVQHvexdoMuqfLyOzqNETC7YJBLpxZy3nLkGeoO0Kr7VsfQU/exec"
+  intro: >-
+    Data Science Services at IQSS runs free workshops, consultations, and guides for researchers at Harvard
+    and MIT. Tell us what you would come to, and we will plan next year's sessions around the answers.
+  meta: "Nine questions, about two minutes. Only the first three are required, and your email is optional."
+  thanks: >-
+    Thank you. We will use your answers to plan next year's training. If you asked us to get in touch, we
+    will write to you at the address you gave.
+
+  questions:
+    - id: role
+      type: radio
+      label: "What is your role?"
+      required: true
+      columns: true
+      other: true
+      options:
+        - Faculty
+        - Postdoc or research scientist
+        - Doctoral student
+        - Master's student
+        - Undergraduate
+        - Research or administrative staff
+
+    - id: school
+      type: select
+      label: "Which school are you in?"
+      required: true
+      options:
+        - Faculty of Arts and Sciences
+        - School of Engineering and Applied Sciences
+        - Business School
+        - Chan School of Public Health
+        - Divinity School
+        - Graduate School of Design
+        - Graduate School of Education
+        - Kennedy School
+        - Law School
+        - Medical School or School of Dental Medicine
+        - Radcliffe Institute
+        - Other Harvard unit
+        - MIT
+        - Elsewhere
+
+    - id: department
+      type: text
+      part: true
+      label: "Department or program"
+      placeholder: "Optional"
+
+    - id: coding
+      type: radio
+      label: "How much code do you write for your research?"
+      required: true
+      options:
+        - "None. I use point-and-click tools or none at all."
+        - "Occasionally, often by adapting someone else's code."
+        - "Most weeks."
+        - "Most days. It is a main part of my work."
+
+    - id: uses
+      type: checkbox
+      label: "Which of these do you use?"
+      hint: "Choose all that apply."
+      columns: true
+      options:
+        - R
+        - Python
+        - Stata
+        - SPSS, SAS, or other statistics software
+        - An AI coding assistant or agent
+        - None yet
+
+    - id: topics
+      type: checkbox
+      label: "Which topics would you most like training in?"
+      hint: "Choose up to three."
+      max: 3
+      other: true
+      columns: true
+      groups:
+        - label: Getting started
+          options:
+            - { label: "Programming basics", detail: "in R, Python, or Stata" }
+            - "Data cleaning and visualization"
+            - "Introductory statistics"
+        - label: Research workflow
+          options:
+            - { label: "Reproducible research", detail: "Git, project organization, environments" }
+            - { label: "Collecting data", detail: "web scraping, APIs" }
+            - { label: "Using AI agents in research", detail: "what they can do, checking their work, responsible use" }
+            - { label: "AI tools and sensitive data", detail: "privacy, data retention, IRB and DUA compliance" }
+        - label: "Methods: intermediate and advanced"
+          options:
+            - { label: "Regression and statistical modeling", detail: "GLMs, multilevel and longitudinal models" }
+            - { label: "Causal inference", detail: "experiments, difference-in-differences, IV, matching and weighting" }
+            - "Bayesian analysis"
+            - { label: "Study design and power analysis", detail: "including power by simulation" }
+            - "Machine learning and text as data"
+
+    - id: formats
+      type: checkbox
+      label: "Which of these would you attend?"
+      hint: "Choose all that apply."
+      options:
+        - { label: "A 60–90 minute talk or demonstration", detail: "you watch and ask questions" }
+        - { label: "A 90 minute workshop", detail: "you follow along on your own laptop" }
+        - { label: "A 3 hour hands-on workshop", detail: "with exercises you work through" }
+        - "A series of 2–4 sessions over a few weeks"
+        - { label: "Drop-in office hours", detail: "bring your own problem" }
+        - "A self-paced written guide"
+        - "Short recorded videos"
+
+    - id: attend
+      type: radio
+      label: "How would you prefer to attend a live session?"
+      options:
+        - In person
+        - Online, on Zoom
+        - Either is fine
+        - I would mostly watch the recording later
+
+    - id: comments
+      type: textarea
+      label: "Anything else you would like us to know?"
+      placeholder: "A method your group keeps asking about, a time of year that suits you, a session you attended and liked"
+
+    - id: follow_up
+      type: checkbox
+      label: "Would you like to hear from us?"
+      options:
+        - Tell me when sessions on my topics are scheduled
+        - My lab, group, or department would like a session run for us
+        - I would like a consultation on a project of my own
+
+    - id: email
+      type: email
+      part: true
+      label: "Your email"
+      hint: "Only if you ticked a box above."
+      placeholder: "name@harvard.edu"

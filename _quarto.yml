@@ -1,0 +1,33 @@
+# The DSS training-interest survey: one page, rebuilt each year from surveys/<year>.yml by survey.lua. The look
+# comes from the dss-theme extension (quarto add IQSS/dss-theme). Responses go to a Google Apps Script web app
+# (apps-script/) that files them in a Google Sheet; nothing is stored here.
+project:
+  type: dss-theme
+  output-dir: _site
+  render:
+    - index.qmd
+  resources:
+    - assets/
+
+website:
+  title: "DSS Training Survey"
+  site-url: https://iqss.github.io/dss-survey/
+  repo-url: https://github.com/IQSS/dss-survey
+  # A form has nothing to report an issue about, and the button would sit beside Submit.
+  repo-actions: []
+  page-footer:
+    right:
+      - text: "MIT"
+        href: https://github.com/IQSS/dss-survey/blob/main/LICENSE
+
+format:
+  dss-theme-html:
+    theme:
+      light: [cosmo, _extensions/IQSS/dss-theme/dss.scss, survey.scss]
+      dark: [cosmo, _extensions/IQSS/dss-theme/dss.scss, _extensions/IQSS/dss-theme/dss-dark.scss, survey.scss]
+    toc: false
+    anchor-sections: false
+    filters:
+      - survey.lua
+    include-after-body:
+      - text: '<script src="assets/survey.js"></script>'

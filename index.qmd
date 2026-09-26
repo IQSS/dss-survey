@@ -1,0 +1,8 @@
+---
+# The survey itself (title, questions, where responses go) is in the year's file. Next year, change this line.
+metadata-files:
+  - surveys/2026.yml
+---
+
+::: {#survey}
+:::

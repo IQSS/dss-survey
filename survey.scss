@@ -1,0 +1,69 @@
+/*-- scss:defaults --*/
+// The tokens (fonts, the IQSS blue and orange, greys, dark counterparts) come from the dss-theme extension,
+// layered before this file in _quarto.yml. This file adds only what the form needs.
+
+/*-- scss:rules --*/
+// Both themes compile this file, so two colours follow the ground: a question's box is a step lighter than
+// the paper, or the panel tone on the dark ground; the button's text is white on the light theme's orange and
+// dark on the dark one's. They are set here rather than in the defaults, which Quarto places before dss.scss.
+$survey-light: lightness($body-bg) > 50%;
+$survey-panel: if($survey-light, mix(#fff, $body-bg, 50%), $dss-light);
+$survey-btn-ink: if($survey-light, #fff, #14181e);
+
+// The year's description is for search results and link previews; on the page the introduction says it.
+#title-block-header .description { display: none; }
+
+// The form reads down one column at the body width the theme sets; each question is a box.
+.lede { font-size: 16px; max-width: 65ch; }
+.survey-meta { color: $dss-muted; font-size: 14px; margin-bottom: 24px; }
+
+#survey-form { display: grid; gap: 14px; }
+#survey-form fieldset {
+  display: grid; gap: 18px; margin: 0; min-width: 0;
+  padding: 18px 20px 20px; border: 1px solid $dss-rule; border-radius: 4px; background: $survey-panel;
+}
+.question { display: grid; gap: 8px; }
+.q { display: flex; gap: 12px; align-items: baseline; font-weight: 600; font-size: 16px; line-height: 1.4; }
+.q.part { font-weight: 500; font-size: 14.5px; }
+.q .num { font-family: $headings-font-family; font-weight: 400; color: $dss-blue; min-width: 1.2em; font-variant-numeric: tabular-nums; }
+.q .req { margin-left: auto; font: 600 10.5px Montserrat, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: $dss-muted; }
+.hint, .counter { color: $dss-muted; font-size: 13px; }
+.counter { font-variant-numeric: tabular-nums; }
+.counter.full { color: $dss-blue; font-weight: 600; }
+
+.opts { display: grid; gap: 0; }
+.opts.cols { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); column-gap: 20px; }
+.opt-group { display: grid; margin-bottom: 8px; break-inside: avoid; }
+// Grouped options flow as newspaper columns, so each group keeps its own height and the groups stack.
+.opts.cols:has(.opt-group) { display: block; columns: 2 260px; column-gap: 20px; }
+.group-label { font: 600 11.5px Montserrat, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: $dss-muted; margin: 4px 0 2px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 5px 0; cursor: pointer; font-size: 14.5px; line-height: 1.45; }
+.opt input[type="radio"], .opt input[type="checkbox"] { flex: none; width: 16px; height: 16px; margin: 3px 0 0; accent-color: $dss-blue; }
+.opt small { display: block; color: $dss-muted; font-size: 12.5px; }
+.opt:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+.opt-other { align-items: center; }
+.opt-other .other-text { max-width: 320px; }
+
+#survey-form select, #survey-form textarea, #survey-form input[type="text"], #survey-form input[type="email"] {
+  font: inherit; font-size: 14.5px; color: $body-color; background: $body-bg;
+  border: 1px solid $dss-rule; border-radius: 3px; padding: 7px 10px; width: 100%; max-width: 100%;
+}
+#survey-form textarea { min-height: 84px; resize: vertical; }
+#survey-form :focus-visible { outline: 2px solid $dss-orange; outline-offset: 2px; }
+
+.question.invalid .q-text { color: $dss-orange; }
+.question .error { color: $dss-orange; font-size: 13px; font-weight: 500; }
+.question .error:empty { display: none; }
+
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 6px; }
+.dss-btn { font: 500 14px Montserrat, sans-serif; background: $dss-orange; color: $survey-btn-ink; border: 1px solid $dss-orange; border-radius: 3px; padding: 11px 26px; cursor: pointer; }
+.dss-btn:hover { filter: brightness(1.07); }
+.dss-btn:disabled { opacity: 0.6; cursor: wait; }
+.status { font-size: 13.5px; color: $dss-muted; }
+
+.thanks { padding: 22px 24px; border-radius: 4px; background: $dss-light; }
+.thanks h2 { margin: 0 0 8px; border: 0; }
+.thanks p { margin: 0; max-width: 65ch; }
+.thanks:focus { outline: none; }
