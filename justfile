@@ -21,6 +21,16 @@ preview:
 deploy-receiver:
     cd apps-script && clasp push -f && clasp redeploy {{deployment}} --description "survey receiver"
 
+# Print a year's responses as CSV (`just responses 2026 > somewhere-private.csv`); with no year, list the tabs.
+# The key comes from 1Password and goes in the request body, never the address. The CSV holds respondents'
+# emails, so write it somewhere outside this public repository.
+responses tab="":
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    key=$(op read op://Credentials/dss-survey-export-key/credential)
+    jq -n --arg k "$key" --arg t "{{tab}}" '{action: "export", key: $k} + (if $t == "" then {} else {tab: $t} end)' |
+      curl -sSL -H 'Content-Type: text/plain' --data @- "{{endpoint}}"
+
 # Confirm the receiver answers. A test row is written to the tab named `test`; delete it from the Sheet after.
 check-receiver:
     curl -sSL "{{endpoint}}"; echo

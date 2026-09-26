@@ -27,6 +27,13 @@ Deployed with [clasp](https://github.com/google/clasp), Google's command-line to
 as the maintainer. After changing `apps-script/Code.js`, run `just deploy-receiver`; it keeps the same web
 address, so the page needs no change. `just check-receiver` sends a test response to a tab named `test`.
 
+## Reading the responses
+
+Open the Sheet in the maintainer's Google Drive, or from the command line run `just responses 2026` to print
+that year's tab as CSV (`just responses` alone lists the tabs). The command reads a private key from the
+maintainer's 1Password; without it the receiver returns nothing. The CSV includes respondents' email
+addresses, so save it outside this repository.
+
 ## License
 
 The code is under the [MIT License](LICENSE).

@@ -6,9 +6,16 @@
 const SHEET_NAME = 'DSS training survey responses';
 const MAX_CELL = 2000;
 
+// The private export. A request whose `key` hashes to this value gets a tab of the Sheet back as CSV. The key
+// itself is in the maintainer's 1Password (op://Credentials/dss-survey-export-key/credential); only its SHA-256
+// is here, which cannot be turned back into the key, so publishing it gives nothing away. To change the key,
+// put a new one in 1Password, paste its hash here, and run `just deploy-receiver`.
+const EXPORT_KEY_SHA256 = 'f1dc3751df33cc3c544a4de21dc083b1f09003e9b2ed619177afd8106be37bf4';
+
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+    if (data.action === 'export') return exportTab_(data);
     // The honeypot: a field hidden from people and filled in only by bots. Report success and keep nothing.
     if (data.website) return reply_({ ok: true });
     const tab = String(data.survey || '').replace(/[^\w-]/g, '').slice(0, 30) || 'unknown';
@@ -42,7 +49,7 @@ function append_(tab, answers, seconds) {
   ['received', ...Object.keys(answers), 'seconds'].forEach(k => { if (!headers.includes(k)) headers.push(k); });
   sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
   sh.setFrozenRows(1);
-  const extra = { received: new Date(), seconds: Number(seconds) || '' };
+  const extra = { received: new Date(), seconds: seconds === null || seconds === undefined ? '' : Number(seconds) };
   sh.appendRow(headers.map(h => (h in extra ? extra[h] : cell_(answers[h]))));
 }
 
@@ -53,6 +60,29 @@ function cell_(v) {
   let s = Array.isArray(v) ? v.map(String).join('; ') : String(v);
   s = s.slice(0, MAX_CELL);
   return /^[=+\-@]/.test(s) ? "'" + s : s;
+}
+
+// Answers an export request: with the right key, the named tab as CSV, or the list of tabs when none is named.
+// A wrong key gets the same reply as a missing tab, so the reply says nothing about which was wrong.
+function exportTab_(data) {
+  const denied = reply_({ ok: false, error: 'Not found.' });
+  if (!data.key || sha256_(String(data.key)) !== EXPORT_KEY_SHA256) return denied;
+  const ss = spreadsheet_();
+  if (!data.tab) return reply_({ ok: true, tabs: ss.getSheets().map(s => s.getName()) });
+  const sh = ss.getSheetByName(String(data.tab));
+  if (!sh) return denied;
+  const rows = sh.getDataRange().getDisplayValues();
+  const csv = rows.map(r => r.map(csvCell_).join(',')).join('\r\n') + '\r\n';
+  return ContentService.createTextOutput(csv).setMimeType(ContentService.MimeType.CSV);
+}
+
+function csvCell_(v) {
+  return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+
+function sha256_(s) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8)
+    .map(b => ('0' + (b & 0xff).toString(16)).slice(-2)).join('');
 }
 
 function spreadsheet_() {
