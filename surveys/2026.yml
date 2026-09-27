@@ -40,7 +40,8 @@ survey:
         - Doctoral student
         - Master's student
         - Undergraduate
-        - Research or administrative staff
+        - { label: "Research staff", detail: "research assistant, data analyst, lab manager" }
+        - Administrative or professional staff
 
     - id: school
       type: select
