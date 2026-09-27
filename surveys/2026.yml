@@ -135,9 +135,9 @@ survey:
         - { label: "A 90 minute workshop", detail: "you follow along on your own laptop" }
         - { label: "A 3 hour hands-on workshop", detail: "with exercises you work through" }
         - "A series of 2–4 sessions over a few weeks"
-        - { label: "Drop-in office hours", detail: "bring your own problem" }
+        - { label: "A 2–3 day bootcamp", detail: "full days of teaching and exercises" }
         - "A self-paced written guide"
-        - "Short recorded videos"
+        - "Recorded webinars you can watch in your own time"
 
     - id: attend
       type: radio
