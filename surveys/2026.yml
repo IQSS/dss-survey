@@ -22,7 +22,7 @@ survey:
   intro: >-
     Data Science Services at IQSS runs free workshops, consultations, and guides for researchers at Harvard
     and MIT. Tell us what you would come to, and we will plan next year's sessions around the answers.
-  meta: "Nine questions, about two minutes. Only the first three are required, and your email is optional."
+  meta: "Nine questions, about two minutes."
   thanks: >-
     Thank you. We will use your answers to plan next year's training. If you asked us to get in touch, we
     will write to you at the address you gave.
@@ -81,6 +81,7 @@ survey:
     - id: uses
       type: checkbox
       label: "Which of these do you use?"
+      required: true
       hint: "Choose all that apply."
       columns: true
       options:
@@ -94,6 +95,7 @@ survey:
     - id: topics
       type: checkbox
       label: "Which topics would you most like training in?"
+      required: true
       hint: "Choose up to three."
       max: 3
       other: true
@@ -121,6 +123,7 @@ survey:
     - id: formats
       type: checkbox
       label: "Which of these would you attend?"
+      required: true
       hint: "Choose all that apply."
       options:
         - { label: "A 60–90 minute talk or demonstration", detail: "you watch and ask questions" }
@@ -134,6 +137,7 @@ survey:
     - id: attend
       type: radio
       label: "How would you prefer to attend a live session?"
+      required: true
       options:
         - In person
         - Online, on Zoom
