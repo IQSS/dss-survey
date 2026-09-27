@@ -99,8 +99,8 @@ survey:
       type: checkbox
       label: "Which topics would you most like training in?"
       required: true
-      hint: "Choose up to three."
-      max: 3
+      hint: "Choose up to five."
+      max: 5
       other: true
       columns: true
       groups:
@@ -121,7 +121,9 @@ survey:
             - { label: "Causal inference", detail: "experiments, difference-in-differences, IV, matching and weighting" }
             - "Bayesian analysis"
             - { label: "Study design and power analysis", detail: "including power by simulation" }
-            - "Machine learning and text as data"
+            - "Exploratory data analysis and pre-registration plans"
+            - { label: "Machine learning", detail: "including deep learning" }
+            - { label: "Text analysis", detail: "including with LLMs" }
 
     - id: formats
       type: checkbox
