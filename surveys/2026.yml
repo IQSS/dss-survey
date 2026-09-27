@@ -147,7 +147,7 @@ survey:
         - In person
         - Online, on Zoom
         - Either is fine
-        - I would mostly watch the recording later
+        - I would prefer to watch the recording later
 
     - id: comments
       type: textarea
