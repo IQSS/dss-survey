@@ -50,8 +50,8 @@
     q.addEventListener('change', () => clearError(q));
   });
 
-  // "None yet" and the other boxes in the same question exclude each other.
-  form.querySelectorAll('input[type="checkbox"][value="None yet"]').forEach((none) => {
+  // An exclusive box ("None of the above") and the other boxes in the same question clear each other.
+  form.querySelectorAll('input[type="checkbox"][data-exclusive]').forEach((none) => {
     const q = none.closest('.question');
     q.addEventListener('change', (e) => {
       if (!e.target.checked || e.target.type !== 'checkbox') return;
@@ -82,13 +82,19 @@
     q.querySelector('.error').textContent = '';
   }
 
+  const isEmpty = (a) => (Array.isArray(a) ? a.length === 0 : a === '');
+  const byId = (id) => questions.find((q) => q.dataset.q === id);
+
   function check() {
     let first = null;
     questions.forEach((q) => {
       clearError(q);
       const a = answer(q);
-      const empty = Array.isArray(a) ? a.length === 0 : a === '';
-      if (q.dataset.required && empty) setError(q, 'Please answer this question.');
+      const empty = isEmpty(a);
+      // Required outright, or required because another question (named by data-required-if) has an answer.
+      const other = q.dataset.requiredIf && byId(q.dataset.requiredIf);
+      const required = q.dataset.required || (other && !isEmpty(answer(other)));
+      if (required && empty) setError(q, q.dataset.requiredMessage || 'Please answer this question.');
       else if (q.dataset.type === 'email' && a && !q.querySelector('input').checkValidity()) {
         setError(q, 'Please enter an email address, or leave this blank.');
       }
