@@ -46,9 +46,13 @@ function append_(tab, answers, seconds) {
   const sh = ss.getSheetByName(tab) || ss.insertSheet(tab);
   const headers = sh.getLastColumn() ? sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0] : [];
   // Columns come from the answers themselves, so a new question next year becomes a new column on its own.
+  // The header row is written only when it gains a column: every Sheet call costs time the respondent waits.
+  const before = headers.length;
   ['received', ...Object.keys(answers), 'seconds'].forEach(k => { if (!headers.includes(k)) headers.push(k); });
-  sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
-  sh.setFrozenRows(1);
+  if (headers.length !== before) {
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
   const extra = { received: new Date(), seconds: seconds === null || seconds === undefined ? '' : Number(seconds) };
   sh.appendRow(headers.map(h => (h in extra ? extra[h] : cell_(answers[h]))));
 }

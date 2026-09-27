@@ -1,6 +1,10 @@
 // survey.js: checks the form and sends it to the receiver (a Google Apps Script web app) as JSON.
 // The body is sent as text/plain, which the browser posts without a CORS preflight; Apps Script
 // answers through a redirect that fetch follows, and the reply says whether the row was saved.
+// Apps Script is slow from cold (35 seconds has been seen for the first request after a quiet spell,
+// 2 seconds once running), so the page wakes the receiver at the first answer, thanks the respondent as
+// soon as they submit, and sends with keepalive so the request finishes even if they close the tab.
+// If it fails while they are still here, the thanks gives way to a Try again button.
 (() => {
   const form = document.getElementById('survey-form');
   if (!form) return;
@@ -10,8 +14,13 @@
   const questions = [...form.querySelectorAll('.question')];
 
   // The clock starts at the first answer, so the Sheet records how long the survey really takes.
+  // The first answer also wakes the receiver, so it is running by the time they press Submit.
   let started = null;
-  const start = () => { if (!started) started = Date.now(); };
+  const start = () => {
+    if (started) return;
+    started = Date.now();
+    fetch(form.dataset.endpoint).catch(() => {});
+  };
   form.addEventListener('input', start);
   form.addEventListener('change', start);
 
@@ -103,7 +112,7 @@
     return first;
   }
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const bad = check();
     if (bad) {
@@ -121,21 +130,41 @@
       seconds: started ? Math.round((Date.now() - started) / 1000) : null,
       website: form.querySelector('input[name="website"]').value,
     };
-    button.disabled = true;
-    status.textContent = 'Sending…';
+    const body = JSON.stringify(payload);
+    form.hidden = true;
+    form.previousElementSibling?.classList.contains('survey-meta') && (form.previousElementSibling.hidden = true);
+    thanks.hidden = false;
+    thanks.focus();
+    window.scrollTo({ top: 0 });
+    send(body);
+  });
+
+  const failure = document.createElement('div');
+  failure.className = 'send-failure';
+  failure.hidden = true;
+  failure.innerHTML = '<p>Your answers have not reached us yet. Please try again, or ' +
+    '<a href="https://www.iq.harvard.edu/data-science-services/contact-us">write to us</a>.</p>' +
+    '<div class="actions"><button type="button" class="dss-btn">Try again</button><span class="status" role="status"></span></div>';
+  thanks.append(failure);
+  const retry = failure.querySelector('button');
+  const retryStatus = failure.querySelector('.status');
+  let pending = null;
+  retry.addEventListener('click', () => send(pending));
+
+  async function send(body) {
+    pending = body;
+    retry.disabled = true;
+    retryStatus.textContent = failure.hidden ? '' : 'Sending…';
     try {
-      const res = await fetch(form.dataset.endpoint, { method: 'POST', body: JSON.stringify(payload) });
+      const res = await fetch(form.dataset.endpoint, { method: 'POST', body, keepalive: true });
       const reply = await res.json();
       if (!reply.ok) throw new Error(reply.error || 'not saved');
-      form.hidden = true;
-      form.previousElementSibling?.classList.contains('survey-meta') && (form.previousElementSibling.hidden = true);
-      thanks.hidden = false;
-      thanks.focus();
-      window.scrollTo({ top: 0 });
+      failure.hidden = true;
     } catch (err) {
-      button.disabled = false;
-      status.innerHTML = 'Your answers could not be sent. Please try again in a moment, or ' +
-        '<a href="https://www.iq.harvard.edu/data-science-services/contact-us">write to us</a>.';
+      failure.hidden = false;
+      retryStatus.textContent = '';
+    } finally {
+      retry.disabled = false;
     }
-  });
+  }
 })();

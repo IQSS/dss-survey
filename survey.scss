@@ -67,3 +67,5 @@ $survey-btn-ink: if($survey-light, #fff, #14181e);
 .thanks h2 { margin: 0 0 8px; border: 0; }
 .thanks p { margin: 0; max-width: 65ch; }
 .thanks:focus { outline: none; }
+.send-failure { margin-top: 16px; padding-top: 14px; border-top: 1px solid $dss-rule; }
+.send-failure p { color: $dss-orange; font-weight: 500; }
