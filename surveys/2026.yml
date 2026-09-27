@@ -74,7 +74,8 @@ survey:
       label: "How much code do you write for your research?"
       required: true
       options:
-        - "None. I use point-and-click tools or none at all."
+        - "None. I use point-and-click software, or no software at all."
+        - "None myself. AI tools write code for me."
         - "Occasionally, often by adapting someone else's code."
         - "Most weeks."
         - "Most days. It is a main part of my work."
