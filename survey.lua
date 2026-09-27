@@ -18,20 +18,21 @@ local function truthy(v)
   return v == true or str(v) == 'true'
 end
 
--- An option is a string, or a map with a label and an optional detail line.
+-- An option is a string, or a map with a label, an optional detail line, and an optional exclusive flag.
 local function option(o)
   if type(o) == 'table' and o.label ~= nil then
-    return str(o.label), o.detail and str(o.detail) or nil
+    return str(o.label), o.detail and str(o.detail) or nil, truthy(o.exclusive)
   end
-  return str(o), nil
+  return str(o), nil, false
 end
 
-local function choice(q, kind, label, detail, n)
+local function choice(q, kind, label, detail, exclusive, n)
   local id = q.id .. '-' .. n
   local small = detail and ('<small>' .. esc(detail) .. '</small>') or ''
+  local ex = exclusive and ' data-exclusive' or ''
   return string.format(
-    '<label class="opt" for="%s"><input type="%s" name="%s" id="%s" value="%s"><span>%s%s</span></label>',
-    id, kind, q.id, id, esc(label), esc(label), small)
+    '<label class="opt" for="%s"><input type="%s" name="%s" id="%s" value="%s"%s><span>%s%s</span></label>',
+    id, kind, q.id, id, esc(label), ex, esc(label), small)
 end
 
 local function choices(q, kind)
@@ -39,8 +40,8 @@ local function choices(q, kind)
   local function add(list)
     for _, o in ipairs(list) do
       n = n + 1
-      local label, detail = option(o)
-      table.insert(out, choice(q, kind, label, detail, n))
+      local label, detail, exclusive = option(o)
+      table.insert(out, choice(q, kind, label, detail, exclusive, n))
     end
   end
   if q.groups then

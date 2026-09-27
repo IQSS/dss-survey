@@ -8,7 +8,8 @@
 # options out in two columns), max (checkbox only: the most that can be ticked), other (add an "Other" option
 # with a text box), part (belongs to the question before it: shown in the same box, unnumbered), placeholder,
 # and options, or groups of options each with a label. An option is a string, or a map of label and detail
-# (a line of smaller text under it); what is stored is the label.
+# (a line of smaller text under it) and exclusive (ticking it clears the other boxes, and ticking another
+# clears it); what is stored is the label.
 #
 # Design notes, question by question, are in dss-training-ops,
 # docs/plans/2026-09-26-training-interest-survey.md.
@@ -92,7 +93,7 @@ survey:
         - Stata
         - SPSS, SAS, or other statistics software
         - An AI coding assistant or agent
-        - None yet
+        - { label: "None of the above", exclusive: true }
 
     - id: topics
       type: checkbox

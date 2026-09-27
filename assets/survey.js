@@ -50,8 +50,8 @@
     q.addEventListener('change', () => clearError(q));
   });
 
-  // "None yet" and the other boxes in the same question exclude each other.
-  form.querySelectorAll('input[type="checkbox"][value="None yet"]').forEach((none) => {
+  // An exclusive box ("None of the above") and the other boxes in the same question clear each other.
+  form.querySelectorAll('input[type="checkbox"][data-exclusive]').forEach((none) => {
     const q = none.closest('.question');
     q.addEventListener('change', (e) => {
       if (!e.target.checked || e.target.type !== 'checkbox') return;
