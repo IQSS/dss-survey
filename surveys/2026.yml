@@ -152,7 +152,7 @@ survey:
     - id: comments
       type: textarea
       label: "Anything else you would like us to know?"
-      placeholder: "A method your group keeps asking about, a time of year that suits you, a session you attended and liked"
+      hint: "For example, a topic we missed, or the times of year or week that suit you."
 
     - id: follow_up
       type: checkbox
