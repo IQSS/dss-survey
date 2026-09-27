@@ -90,6 +90,8 @@ local function block(q, number)
   local attrs = string.format(' data-q="%s" data-type="%s"', q.id, q.type)
   if truthy(q.required) then attrs = attrs .. ' data-required="true"' end
   if q.max then attrs = attrs .. ' data-max="' .. esc(str(q.max)) .. '"' end
+  if q.required_if then attrs = attrs .. ' data-required-if="' .. esc(str(q.required_if)) .. '"' end
+  if q.required_message then attrs = attrs .. ' data-required-message="' .. esc(str(q.required_message)) .. '"' end
   local num = number and ('<span class="num">' .. number .. '</span>') or ''
   local req = truthy(q.required) and '<span class="req" title="Required">Required</span>' or ''
   local cls = number and 'q' or 'q part'

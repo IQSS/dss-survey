@@ -6,7 +6,9 @@
 # A question: id (the column name in the Sheet; keep it stable across years so answers line up), type
 # (radio · checkbox · select · text · textarea · email), label, and optionally hint, required, columns (lay the
 # options out in two columns), max (checkbox only: the most that can be ticked), other (add an "Other" option
-# with a text box), part (belongs to the question before it: shown in the same box, unnumbered), placeholder,
+# with a text box), part (belongs to the question before it: shown in the same box, unnumbered), required_if
+# (the id of another question: this one is required when that one has an answer), required_message (the
+# message shown when a required answer is missing), placeholder,
 # and options, or groups of options each with a label. An option is a string, or a map of label and detail
 # (a line of smaller text under it) and exclusive (ticking it clears the other boxes, and ticking another
 # clears it); what is stored is the label.
@@ -158,13 +160,15 @@ survey:
       type: checkbox
       label: "Would you like to hear from us?"
       options:
-        - Tell me when sessions on my topics are scheduled
+        - Tell me when sessions are scheduled
         - My lab, group, or department would like a session run for us
-        - I would like a consultation on a project of my own
+        - I would like help with a project of my own
 
     - id: email
       type: email
       part: true
       label: "Your email"
-      hint: "Only if you ticked a box above."
+      hint: "Needed if you ticked a box above."
+      required_if: follow_up
+      required_message: "Please add your email so we can get back to you."
       placeholder: "name@harvard.edu"
