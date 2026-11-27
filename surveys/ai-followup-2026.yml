@@ -7,6 +7,7 @@ survey:
   intro: >-
     IQSS Data Science Services is considering follow-up sessions after the recent introductory talk
     on AI agents. Your answers will help us choose what to offer.
+  meta: "About 2 minutes"
   questions:
     - id: talk
       type: radio
