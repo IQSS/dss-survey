@@ -91,6 +91,13 @@ local function block(q, number)
   if truthy(q.required) then attrs = attrs .. ' data-required="true"' end
   if q.max then attrs = attrs .. ' data-max="' .. esc(str(q.max)) .. '"' end
   if q.required_if then attrs = attrs .. ' data-required-if="' .. esc(str(q.required_if)) .. '"' end
+  local condition = q.show_if or q.hide_if
+  if condition then
+    local mode = q.show_if and 'show' or 'hide'
+    attrs = attrs .. string.format(' data-condition="%s" data-source="%s" data-value="%s"',
+      mode, esc(str(condition.question)), esc(str(condition.value)))
+    if q.show_if then attrs = attrs .. ' hidden' end
+  end
   if q.required_message then attrs = attrs .. ' data-required-message="' .. esc(str(q.required_message)) .. '"' end
   local num = number and ('<span class="num">' .. number .. '</span>') or ''
   local req = truthy(q.required) and '<span class="req" title="Required">Required</span>' or ''
@@ -103,7 +110,7 @@ local function block(q, number)
     '<div class="error" role="alert"></div></div>'
 end
 
-local function form(s)
+local function form(s, preview)
   local out = {}
   local number, open = 0, false
   for _, q in ipairs(s.questions) do
@@ -120,21 +127,27 @@ local function form(s)
     end
   end
   if open then table.insert(out, '</fieldset>') end
-  local head = string.format(
-    '<p class="lede">%s</p><p class="survey-meta">%s</p>', esc(str(s.intro)), esc(str(s.meta)))
+  local head = '<p class="lede">' .. esc(str(s.intro)) .. '</p>'
+  local meta = preview and 'Local preview · You can try the form without sending answers.' or str(s.meta)
+  if meta then head = head .. '<p class="survey-meta">' .. esc(meta) .. '</p>' end
   -- The honeypot: off screen and out of the tab order, so only a bot fills it in; the receiver discards those.
   local hp = '<div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>'
   local actions = '<div class="actions"><button type="submit" class="dss-btn">Submit</button><span class="status" role="status"></span></div>'
-  local thanks = '<div id="survey-thanks" class="thanks" hidden tabindex="-1"><h2>Thank you</h2><p>' .. esc(str(s.thanks)) .. '</p></div>'
-  return head .. string.format('<form id="survey-form" data-survey="%s" data-endpoint="%s" novalidate>',
-      esc(str(s.id)), esc(str(s.endpoint))) ..
+  local thanks = s.thanks and ('<div id="survey-thanks" class="thanks" hidden tabindex="-1"><h2>Thank you</h2><p>' .. esc(str(s.thanks)) .. '</p></div>') or ''
+  local destination = preview and 'data-preview' or
+    ('data-endpoint="' .. esc(str(s.endpoint)) .. '"')
+  if s.confirmation_page then
+    destination = destination .. ' data-confirmation="' .. esc(str(s.confirmation_page)) .. '"'
+  end
+  return head .. string.format('<form id="survey-form" data-survey="%s" %s novalidate>',
+      esc(str(s.id)), destination) ..
     table.concat(out) .. hp .. actions .. '</form>' .. thanks
 end
 
 function Pandoc(doc)
   local s = doc.meta.survey
   if not s then return doc end
-  local html = pandoc.RawBlock('html', form(s))
+  local html = pandoc.RawBlock('html', form(s, truthy(doc.meta['survey-preview'])))
   doc.blocks = doc.blocks:walk({
     Div = function(d)
       if d.identifier == 'survey' then return html end

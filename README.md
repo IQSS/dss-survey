@@ -10,9 +10,15 @@ and formats they would use. It is published at <https://iqss.github.io/dss-surve
   [DSS theme](https://github.com/IQSS/dss-theme).
 - **The responses** are sent by `assets/survey.js` to a Google Apps Script web app, whose code is in
   `apps-script/`. It runs on the maintainer's Harvard Google account and adds each response as a row to a
-  Google Sheet in that account, with one tab for each year. Nothing a respondent enters is stored in this
+  Google Sheet in that account, with one tab for each survey ID. Nothing a respondent enters is stored in this
   repository or on GitHub.
 - **Publishing:** every push to `main` renders the page and publishes it to GitHub Pages.
+
+## AI research follow-up survey
+
+The [follow-up form](https://iqss.github.io/dss-survey/ai-followup.html) asks which AI research sessions people would attend. The receiver saves responses in the `ai-followup-2026` tab. After it confirms a save, the form opens `ai-followup-submitted.html` with links to the three DSS resources.
+
+Edit the questions in `surveys/ai-followup-2026.yml` and the confirmation in `ai-followup-submitted.qmd`. Run `just preview-followup` for a [local preview](http://127.0.0.1:8814/ai-followup.html) that lets you test both pages without sending responses.
 
 ## A new year's survey
 

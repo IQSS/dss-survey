@@ -17,6 +17,10 @@ render:
 preview:
     quarto preview
 
+# Review the Pop Center and Sociology draft locally.
+preview-followup:
+    quarto preview ai-followup.qmd --profile followup --host 127.0.0.1 --port 8814 --no-browser
+
 # Push the receiver's code and move its deployment to the new version (same address).
 deploy-receiver:
     cd apps-script && clasp push -f && clasp redeploy {{deployment}} --description "survey receiver"

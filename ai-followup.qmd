@@ -1,0 +1,7 @@
+---
+metadata-files:
+  - surveys/ai-followup-2026.yml
+---
+
+::: {#survey}
+:::

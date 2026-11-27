@@ -1,0 +1,6 @@
+project:
+  render:
+    - ai-followup.qmd
+    - ai-followup-submitted.qmd
+metadata:
+  survey-preview: true
