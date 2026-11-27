@@ -128,7 +128,10 @@ local function form(s, preview)
   end
   if open then table.insert(out, '</fieldset>') end
   local head = '<p class="lede">' .. esc(str(s.intro)) .. '</p>'
-  local meta = preview and 'Local preview · You can try the form without sending answers.' or str(s.meta)
+  local meta = str(s.meta)
+  if preview then
+    meta = (meta and (meta .. ' · ') or '') .. 'Local preview · You can try the form without sending answers.'
+  end
   if meta then head = head .. '<p class="survey-meta">' .. esc(meta) .. '</p>' end
   -- The honeypot: off screen and out of the tab order, so only a bot fills it in; the receiver discards those.
   local hp = '<div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>'
