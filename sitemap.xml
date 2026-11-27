@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://iqss.github.io/dss-survey/ai-followup-submitted.html</loc>
+    <lastmod>2026-11-27T21:34:29.834Z</lastmod>
+  </url>
+  <url>
     <loc>https://iqss.github.io/dss-survey/index.html</loc>
-    <lastmod>2026-09-27T17:24:00.121Z</lastmod>
+    <lastmod>2026-11-27T21:34:29.835Z</lastmod>
+  </url>
+  <url>
+    <loc>https://iqss.github.io/dss-survey/ai-followup.html</loc>
+    <lastmod>2026-11-27T21:34:29.834Z</lastmod>
   </url>
 </urlset>
