@@ -2,9 +2,8 @@
 // The body is sent as text/plain, which the browser posts without a CORS preflight; Apps Script
 // answers through a redirect that fetch follows, and the reply says whether the row was saved.
 // Apps Script is slow from cold (35 seconds has been seen for the first request after a quiet spell,
-// 2 seconds once running), so the page wakes the receiver at the first answer, thanks the respondent as
-// soon as they submit, and sends with keepalive so the request finishes even if they close the tab.
-// If it fails while they are still here, the thanks gives way to a Try again button.
+// 2 seconds once running), so the page wakes the receiver at the first answer. The annual survey shows
+// inline thanks while saving. A survey with a confirmation page waits for the receiver before navigating.
 (() => {
   const form = document.getElementById('survey-form');
   if (!form) return;
@@ -19,7 +18,7 @@
   const start = () => {
     if (started) return;
     started = Date.now();
-    fetch(form.dataset.endpoint).catch(() => {});
+    if (!form.hasAttribute('data-preview')) fetch(form.dataset.endpoint).catch(() => {});
   };
   form.addEventListener('input', start);
   form.addEventListener('change', start);
@@ -40,14 +39,24 @@
       otherBox.addEventListener('change', () => { if (!otherBox.checked) other.value = ''; });
     }
 
-    // A cap on the number of boxes: once it is reached, the rest are disabled until one is unticked.
+    // Resolve the exclusive choice before counting boxes, including when the cap is already met.
+    const exclusive = q.querySelector('input[data-exclusive]');
+    if (exclusive) {
+      q.addEventListener('change', (e) => {
+        if (!e.target.checked || e.target.type !== 'checkbox') return;
+        if (e.target === exclusive) inputs(q).forEach((b) => { if (b !== exclusive) b.checked = false; });
+        else exclusive.checked = false;
+      });
+    }
+
+    // A cap on the number of boxes: once it is reached, disable further non-exclusive choices.
     const max = Number(q.dataset.max);
     if (max) {
       const counter = q.querySelector('.counter');
       const update = () => {
         const boxes = inputs(q);
         const n = boxes.filter((b) => b.checked).length;
-        boxes.forEach((b) => { b.disabled = !b.checked && n >= max; });
+        boxes.forEach((b) => { b.disabled = b !== exclusive && !b.checked && n >= max; });
         if (other) other.disabled = !otherBox.checked && n >= max;
         counter.textContent = n >= max ? `${n} of ${max} chosen. Untick one to change.` : `${n} of ${max} chosen`;
         counter.classList.toggle('full', n >= max);
@@ -59,18 +68,9 @@
     q.addEventListener('change', () => clearError(q));
   });
 
-  // An exclusive box ("None of the above") and the other boxes in the same question clear each other.
-  form.querySelectorAll('input[type="checkbox"][data-exclusive]').forEach((none) => {
-    const q = none.closest('.question');
-    q.addEventListener('change', (e) => {
-      if (!e.target.checked || e.target.type !== 'checkbox') return;
-      if (e.target === none) inputs(q).forEach((b) => { if (b !== none) b.checked = false; });
-      else none.checked = false;
-    });
-  });
-
   function answer(q) {
     const type = q.dataset.type;
+    if (q.hidden) return type === 'checkbox' ? [] : '';
     const other = q.querySelector('.other-text');
     const withOther = (v) => (v === 'Other' && other && other.value.trim() ? `Other: ${other.value.trim()}` : v);
     if (type === 'radio') {
@@ -94,10 +94,24 @@
   const isEmpty = (a) => (Array.isArray(a) ? a.length === 0 : a === '');
   const byId = (id) => questions.find((q) => q.dataset.q === id);
 
+  questions.filter((q) => q.dataset.condition).forEach((q) => {
+    const source = byId(q.dataset.source);
+    const update = () => {
+      const selected = answer(source);
+      const matches = Array.isArray(selected) ? selected.includes(q.dataset.value) : selected === q.dataset.value;
+      q.hidden = q.dataset.condition === 'show' ? !matches : matches;
+      if (q.hidden) clearError(q);
+    };
+    source.addEventListener('change', update);
+    window.addEventListener('pageshow', update);
+    update();
+  });
+
   function check() {
     let first = null;
     questions.forEach((q) => {
       clearError(q);
+      if (q.hidden) return;
       const a = answer(q);
       const empty = isEmpty(a);
       // Required outright, or required because another question (named by data-required-if) has an answer.
@@ -112,8 +126,9 @@
     return first;
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (button.disabled) return;
     const bad = check();
     if (bad) {
       status.textContent = 'Some answers need attention.';
@@ -131,14 +146,37 @@
       website: form.querySelector('input[name="website"]').value,
     };
     const body = JSON.stringify(payload);
+    if (form.dataset.confirmation) {
+      const fieldsets = form.querySelectorAll('fieldset');
+      button.disabled = true;
+      fieldsets.forEach((fieldset) => { fieldset.disabled = true; });
+      status.textContent = 'Submitting…';
+      try {
+        if (!form.hasAttribute('data-preview')) await save(body);
+        window.location.replace(form.dataset.confirmation);
+      } catch {
+        status.textContent = 'We couldn’t confirm your submission. Your answers are still here. Please try again.';
+        fieldsets.forEach((fieldset) => { fieldset.disabled = false; });
+        button.disabled = false;
+      }
+      return;
+    }
     form.hidden = true;
     form.previousElementSibling?.classList.contains('survey-meta') && (form.previousElementSibling.hidden = true);
     thanks.hidden = false;
     thanks.focus();
     window.scrollTo({ top: 0 });
-    send(body);
+    if (!form.hasAttribute('data-preview')) send(body);
   });
 
+  async function save(body) {
+    const res = await fetch(form.dataset.endpoint, { method: 'POST', body, keepalive: true });
+    const reply = await res.json();
+    if (!res.ok || !reply.ok) throw new Error(reply.error || 'not saved');
+  }
+
+  // Surveys with a dedicated confirmation page keep the form open until the receiver acknowledges it.
+  if (!thanks) return;
   const failure = document.createElement('div');
   failure.className = 'send-failure';
   failure.hidden = true;
@@ -156,9 +194,7 @@
     retry.disabled = true;
     retryStatus.textContent = failure.hidden ? '' : 'Sending…';
     try {
-      const res = await fetch(form.dataset.endpoint, { method: 'POST', body, keepalive: true });
-      const reply = await res.json();
-      if (!reply.ok) throw new Error(reply.error || 'not saved');
+      await save(body);
       failure.hidden = true;
     } catch (err) {
       failure.hidden = false;

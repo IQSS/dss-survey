@@ -1,0 +1,20 @@
+---
+title: "Survey Successfully Submitted"
+search: false
+include-in-header:
+  - text: '<meta name="robots" content="noindex">'
+---
+
+::: {.content-hidden when-profile="followup"}
+Thank you for helping IQSS Data Science Services choose which follow-up sessions to offer.
+:::
+
+::: {.content-visible when-profile="followup"}
+You’ve reached the end of the local preview. Your answers stayed in this browser tab.
+:::
+
+## AI resources for your research
+
+- [Doing Research with AI Agents](https://iqss.github.io/dss-agentic-research/) — A guide to working with agents throughout a research project, from literature searches and analysis to writing and reproducibility.
+- [Extending Your Agent’s Toolkit](https://iqss.github.io/dss-agentic-toolkit/) — Tools that help agents manage research workflows, with guidance on setup and use.
+- [DSS Agent Skills](https://iqss.github.io/dss-agent-skills/) — Reusable instructions for recurring tasks, such as setting up projects, searching the literature, and reviewing analyses.

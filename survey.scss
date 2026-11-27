@@ -23,6 +23,7 @@ $survey-btn-ink: if($survey-light, #fff, #14181e);
   padding: 18px 20px 20px; border: 1px solid $dss-rule; border-radius: 4px; background: $survey-panel;
 }
 .question { display: grid; gap: 8px; }
+.question[hidden], #survey-form fieldset:not(:has(> .question:not([hidden]))) { display: none; }
 .q { display: flex; gap: 12px; align-items: baseline; font-weight: 600; font-size: 16px; line-height: 1.4; }
 .q.part { font-weight: 500; font-size: 14.5px; }
 .q .num { font-family: $headings-font-family; font-weight: 400; color: $dss-blue; min-width: 1.2em; font-variant-numeric: tabular-nums; }

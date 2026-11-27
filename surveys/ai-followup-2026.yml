@@ -1,0 +1,92 @@
+title: "What would you like to try next with AI agents in your research?"
+
+survey:
+  id: ai-followup-2026
+  endpoint: "https://script.google.com/macros/s/AKfycbxiOhMQ71eu6hIfHcC5cVQHvexdoMuqfLyOzqNETC7YJBLpxZy3nLkGeoO0Kr7VsfQU/exec"
+  confirmation_page: ai-followup-submitted.html
+  intro: >-
+    IQSS Data Science Services is considering follow-up sessions after the recent introductory talk
+    on AI agents. Your answers will help us choose what to offer.
+  questions:
+    - id: talk
+      type: radio
+      label: "Which talk, if any, did you attend?"
+      hint: "Choose one."
+      required: true
+      options:
+        - Pop Center (November 19th)
+        - Sociology (November 24th)
+        - I didn’t attend either talk
+
+    - id: role
+      type: radio
+      label: "What is your current role?"
+      required: true
+      options:
+        - Graduate student
+        - Postdoc
+        - Faculty
+        - Another role
+
+    - id: grad_year
+      type: select
+      part: true
+      label: "What year of graduate study are you in?"
+      hint: "Optional."
+      show_if: { question: role, value: "Graduate student" }
+      options: [G1, G2, G3, G4, G5, G6, G7 or later]
+
+    - id: topics
+      type: checkbox
+      label: "Which follow-up sessions would you be most likely to attend?"
+      hint: "Choose up to four."
+      required: true
+      max: 4
+      options:
+        - label: Set up an AI agent for your research
+          detail: Write instruction files that tell the agent how you work across projects and what it needs to know about a particular study.
+        - label: Review and undo an agent’s changes with Git
+          detail: See exactly what changed, decide what to keep, and restore an earlier version when needed.
+        - label: Organize a project so you can rerun any step
+          detail: Use an agent to set up a command runner so you can rebuild one figure or rerun the whole analysis.
+        - label: Check an agent’s work before relying on it
+          detail: Test code on examples with known answers and independently verify results that support a research claim.
+        - label: Teach an agent a procedure you use repeatedly
+          detail: Turn a routine, such as checking an incoming dataset, into a reusable skill the agent can apply across projects.
+        - label: Run long jobs while you’re away
+          detail: Use an agent to set up an analysis that runs unattended on your computer and check how it went when you return.
+        - label: Run an AI model on your own computer
+          detail: Set up a local model so you can work with data that need to stay on your machine.
+        - label: Use an AI model to make research measurements
+          detail: Decide what you want the model to measure, try it on a task such as coding text, and check its judgments against human ratings.
+        - { label: "A session on another topic", detail: "Suggest one in the final question." }
+        - { label: "I’m unlikely to attend a follow-up session", detail: "Select this option on its own.", exclusive: true }
+
+    - id: formats
+      type: radio
+      label: "Which session format would you prefer?"
+      hint: "Choose one."
+      required: true
+      hide_if: { question: topics, value: "I’m unlikely to attend a follow-up session" }
+      options:
+        - A live demonstration with time for questions
+        - A hands-on workshop where I follow along with a worked example
+        - A workshop where I apply what I learn to my own project
+        - No preference
+
+    - id: attend
+      type: radio
+      label: "How would you prefer to take part?"
+      hint: "Choose one."
+      required: true
+      hide_if: { question: topics, value: "I’m unlikely to attend a follow-up session" }
+      options:
+        - In person
+        - On Zoom
+        - Either in person or on Zoom
+        - I’d prefer to watch a recording
+
+    - id: comments
+      type: textarea
+      label: "Is there a research task you’d like us to work through with an AI agent in a follow-up session?"
+      hint: "Optional. A phrase or sentence is enough."

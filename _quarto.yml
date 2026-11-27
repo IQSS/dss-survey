@@ -1,4 +1,4 @@
-# The DSS training-interest survey: one page, rebuilt each year from surveys/<year>.yml by survey.lua. The look
+# The DSS training-interest and follow-up surveys are rendered from their YAML files by survey.lua. The look
 # comes from the dss-theme extension (quarto add IQSS/dss-theme). Responses go to a Google Apps Script web app
 # (apps-script/) that files them in a Google Sheet; nothing is stored here.
 project:
@@ -6,6 +6,8 @@ project:
   output-dir: _site
   render:
     - index.qmd
+    - ai-followup.qmd
+    - ai-followup-submitted.qmd
   resources:
     - assets/
 
